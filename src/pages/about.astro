@@ -1,9 +1,13 @@
 ---
+import { Image } from 'astro:assets';
+import avatar from '../assets/ryan-hinkle.jpg';
 import PageHeader from '../components/PageHeader.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SOCIAL_LINKS } from '../site.config';
+import { SITE, SOCIAL_LINKS } from '../site.config';
 
 const github = SOCIAL_LINKS.find((l) => l.name === 'github');
+const linkedin = SOCIAL_LINKS.find((l) => l.name === 'linkedin');
 ---
 
 <BaseLayout title="About" description="About Ryan Hinkle.">
@@ -17,12 +21,17 @@ const github = SOCIAL_LINKS.find((l) => l.name === 'github');
 				learning, books I'm reading, and whatever else I find interesting.
 			</p>
 			<p>
-				You can find my code on {github && <a href={github.href}>GitHub</a>}, or follow along via the
+				You can connect with me on {linkedin && <a href={linkedin.href}>LinkedIn</a>}, find my code on
+				{github && <a href={github.href}>GitHub</a>}, or follow along via the
 				<a href="/rss.xml">RSS feed</a>.
 			</p>
 		</div>
 
-		<aside class="card">
+		<aside class="card profile">
+			<Image class="photo" src={avatar} alt={`Photo of ${SITE.author}`} width={240} height={240} />
+			<p class="name">{SITE.author}</p>
+			<SocialLinks />
+			<hr />
 			<p class="label">Around the site</p>
 			<ul>
 				<li><a href="/blog">Blog</a> — longer writing</li>
@@ -34,6 +43,31 @@ const github = SOCIAL_LINKS.find((l) => l.name === 'github');
 	</div>
 </BaseLayout>
 <style>
+	.photo {
+		display: block;
+		width: 7.5rem;
+		height: 7.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 3px solid var(--bg);
+		box-shadow: 0 0 0 1px var(--border);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.photo {
+			transition: transform 0.4s var(--ease-out);
+		}
+		.photo:hover {
+			transform: rotate(-4deg) scale(1.05);
+		}
+	}
+	.name {
+		margin: 0.75rem 0 0.5rem;
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+	hr {
+		margin-block: 1.25rem;
+	}
 	aside ul {
 		list-style: none;
 		margin: 0.75rem 0 0;

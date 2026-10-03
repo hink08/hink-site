@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import avatar from '../assets/ryan-hinkle.jpg';
 import BookList from '../components/BookList.astro';
 import NoteList from '../components/NoteList.astro';
 import PostList from '../components/PostList.astro';
@@ -25,6 +27,7 @@ const sections = [
 	<div class="stack">
 		<section class="hero with-sidebar">
 			<div>
+				<Image class="avatar" src={avatar} alt="Photo of Ryan Hinkle" width={192} height={192} loading="eager" />
 				<p class="label">Hello</p>
 				<h1>I'm Ryan Hinkle.</h1>
 				<p class="lede">
@@ -58,8 +61,8 @@ const sections = [
 			<ul class="sections">
 				{
 					sections.map((s) => (
-						<li>
-							<a class="card" href={s.href}>
+						<li class="reveal">
+							<a class="card lift" href={s.href}>
 								<span class="name">{s.title}</span>
 								<span class="text">{s.text}</span>
 								{s.count !== undefined && (
@@ -81,6 +84,16 @@ const sections = [
 		padding-block: 1rem 3rem;
 		border-bottom: 1px solid var(--border);
 		align-items: center;
+	}
+	.avatar {
+		display: block;
+		width: 6rem;
+		height: 6rem;
+		margin-bottom: 1.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 3px solid var(--bg);
+		box-shadow: 0 0 0 1px var(--border);
 	}
 	h1 {
 		margin-block: 0.5rem 1rem;
@@ -126,6 +139,14 @@ const sections = [
 	}
 	.sections a:hover {
 		border-color: var(--accent);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.avatar {
+			transition: transform 0.4s var(--ease-out);
+		}
+		.avatar:hover {
+			transform: rotate(-4deg) scale(1.05);
+		}
 	}
 	.sections a:hover .name {
 		color: var(--accent);

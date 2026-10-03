@@ -6,16 +6,16 @@
  */
 :root {
 	color-scheme: light dark;
-	--bg: light-dark(#fbfaf7, #121514);
-	--surface: light-dark(#f3f0ea, #1a1e1c);
-	--surface-2: light-dark(#ebe7df, #232826);
-	--text: light-dark(#1c1f1e, #e8e6e1);
-	--text-muted: light-dark(#5d6662, #9aa39f);
-	--border: light-dark(#e3dfd6, #2a2f2d);
-	--accent: light-dark(#1f6f5f, #6cc4ad);
-	--accent-soft: light-dark(#e1efe9, #1b2d28);
-	--code-bg: light-dark(#f0ede6, #1f2321);
-	--star: light-dark(#b7791f, #e6b85c);
+	--bg: light-dark(#f7f9fc, #0b1220);
+	--surface: light-dark(#eef2f8, #111a2b);
+	--surface-2: light-dark(#e2e8f2, #1a2539);
+	--text: light-dark(#0f1b2d, #e6ebf3);
+	--text-muted: light-dark(#55627a, #94a3b8);
+	--border: light-dark(#dbe3ee, #1e2a40);
+	--accent: light-dark(#1f5bd1, #6ea8ff);
+	--accent-soft: light-dark(#e1eafc, #14233f);
+	--code-bg: light-dark(#eaf0f8, #111a2b);
+	--star: light-dark(#b7791f, #f0c063);
 
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	--wide: 68rem; /* page frame */
@@ -280,4 +280,93 @@ td {
 	padding: 0.5rem 1rem;
 	background: var(--bg);
 	z-index: 100;
+}
+
+/* ---------- Motion ---------- */
+/*
+ * Everything here is opt-in via prefers-reduced-motion: no-preference,
+ * so visitors who ask for less motion get a static site.
+ */
+:root {
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Soft crossfade between pages (native cross-document view transitions). */
+	@view-transition {
+		navigation: auto;
+	}
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation-duration: 220ms;
+	}
+
+	/* Page load: top-level blocks fade up in a short stagger. */
+	main > :not(.stack),
+	main > .stack > * {
+		animation: fade-up 0.6s var(--ease-out) both;
+	}
+	main > :nth-child(2),
+	main > .stack > :nth-child(2) {
+		animation-delay: 80ms;
+	}
+	main > :nth-child(3),
+	main > .stack > :nth-child(3) {
+		animation-delay: 160ms;
+	}
+	main > :nth-child(n + 4),
+	main > .stack > :nth-child(n + 4) {
+		animation-delay: 240ms;
+	}
+
+	/* Scroll reveal for anything marked .reveal (browsers without support just show it). */
+	@supports (animation-timeline: view()) {
+		.reveal {
+			animation: fade-up linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 60%;
+		}
+	}
+
+	/* Hover lift for interactive cards. */
+	/* Uses `translate` (not `transform`) so it composes with .reveal's animation. */
+	.lift {
+		transition:
+			translate 0.25s var(--ease-out),
+			box-shadow 0.25s var(--ease-out),
+			border-color 0.2s;
+	}
+	.lift:hover {
+		translate: 0 -3px;
+		box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.35);
+	}
+
+	.button {
+		transition:
+			color 0.2s,
+			border-color 0.2s,
+			background-color 0.2s,
+			transform 0.2s var(--ease-out);
+	}
+	.button:active {
+		transform: scale(0.97);
+	}
+
+	/* Theme switch: circular reveal from the toggle (set up in ThemeToggle.astro). */
+	.theme-transition::view-transition-old(root),
+	.theme-transition::view-transition-new(root) {
+		animation: none;
+		mix-blend-mode: normal;
+	}
 }

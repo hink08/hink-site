@@ -21,7 +21,7 @@ const { books, compact = false } = Astro.props;
 			const external = !hasNotes(book) && href;
 			const shortTitle = compact ? title.split(':')[0] : title;
 			return (
-				<li>
+				<li class:list={{ 'reveal lift': !compact }}>
 					{!compact && (
 						<div class="cover">
 							{cover ? (

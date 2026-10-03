@@ -19,7 +19,7 @@ const rendered = await Promise.all(notes.map(async (note) => ({ note, ...(await 
 	) : (
 		<ol class:list={['notes', { full }]}>
 			{rendered.map(({ note, Content }) => (
-				<li>
+				<li class="reveal">
 					<article>
 						<a class="date" href={noteUrl(note)}>
 							<FormattedDate date={note.data.pubDate} />

@@ -65,6 +65,14 @@ const initials = SITE.author
 		font-size: 0.8rem;
 		letter-spacing: 0.02em;
 	}
+	@media (prefers-reduced-motion: no-preference) {
+		.mark {
+			transition: transform 0.35s var(--ease-out);
+		}
+		.brand:hover .mark {
+			transform: rotate(-8deg) scale(1.06);
+		}
+	}
 	nav {
 		margin-left: auto;
 		min-width: 0;

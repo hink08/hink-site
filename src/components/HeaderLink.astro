@@ -22,6 +22,13 @@ const isActive = target === '/' ? path === '/' : path === target || path.startsW
 		font-size: 0.95rem;
 		white-space: nowrap;
 	}
+	@media (prefers-reduced-motion: no-preference) {
+		a {
+			transition:
+				color 0.2s,
+				background-color 0.2s;
+		}
+	}
 	a:hover {
 		color: var(--text);
 		background: var(--surface);

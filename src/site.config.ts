@@ -21,6 +21,7 @@ export const NAV_LINKS = [
 
 // Add more entries (e.g. linkedin, email) — icons live in components/SocialLinks.astro.
 export const SOCIAL_LINKS = [
+	{ name: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/ryan-hinkle-7358ba36/' },
 	{ name: 'github', label: 'GitHub', href: 'https://github.com/hink08' },
 	{ name: 'rss', label: 'RSS feed', href: '/rss.xml' },
 ] as const;

@@ -15,7 +15,7 @@ const { posts } = Astro.props;
 	) : (
 		<ul class="posts">
 			{posts.map((post) => (
-				<li>
+				<li class="reveal">
 					<a href={postUrl(post)}>
 						<FormattedDate date={post.data.pubDate} />
 						<span class="text">
@@ -51,6 +51,11 @@ const { posts } = Astro.props;
 	}
 	a:hover {
 		background: var(--surface);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		a {
+			transition: background-color 0.2s;
+		}
 	}
 	a > :global(time) {
 		color: var(--text-muted);
