@@ -78,7 +78,7 @@ started: '2025-09-20'    # optional
 finished: '2025-10-01'   # optional
 rating: 4                # optional, 1–5
 summary: 'One-liner.'    # optional, shown on the bookshelf
-cover: '../../assets/covers/book.jpg'  # optional
+cover: '../../assets/covers/book.jpg'  # optional — any aspect ratio
 link: 'https://www.goodreads.com/book/show/…'  # optional
 ---
 

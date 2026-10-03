@@ -6,7 +6,7 @@ import Rating from './Rating.astro';
 
 interface Props {
 	books: Book[];
-	/** Compact mode: a plain list with no covers or summaries (for sidebars). */
+	/** Compact mode: small thumbnails, no summaries or meta (for sidebars). */
 	compact?: boolean;
 }
 
@@ -22,17 +22,16 @@ const { books, compact = false } = Astro.props;
 			const shortTitle = compact ? title.split(':')[0] : title;
 			return (
 				<li class:list={{ 'reveal lift': !compact }}>
-					{!compact && (
-						<div class="cover">
-							{cover ? (
-								<Image src={cover} alt="" width={128} height={192} />
-							) : (
-								<span class="cover-placeholder" aria-hidden="true">
-									{title.charAt(0)}
-								</span>
-							)}
-						</div>
-					)}
+					<div class="cover">
+						{cover ? (
+							// Width only: height follows the cover's own aspect ratio.
+							<Image src={cover} alt={`Cover of ${title}`} width={compact ? 96 : 192} />
+						) : (
+							<span class="cover-placeholder" aria-hidden="true">
+								{title.charAt(0)}
+							</span>
+						)}
+					</div>
 					<div class="info">
 						<p class="title">
 							{href ? (
@@ -87,7 +86,8 @@ const { books, compact = false } = Astro.props;
 	}
 	.grid li {
 		display: grid;
-		grid-template-columns: 4.5rem minmax(0, 1fr);
+		grid-template-columns: 5.5rem minmax(0, 1fr);
+		align-items: start;
 		gap: 1rem;
 		padding: 1rem;
 		background: var(--surface);
@@ -97,14 +97,23 @@ const { books, compact = false } = Astro.props;
 	.cover img,
 	.cover-placeholder {
 		display: block;
-		width: 4.5rem;
-		aspect-ratio: 2 / 3;
+		width: 100%;
 		height: auto;
-		border-radius: 4px;
-		object-fit: cover;
-		box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+		border-radius: 3px;
+		box-shadow:
+			0 1px 2px rgb(0 0 0 / 0.12),
+			0 6px 14px -6px rgb(0 0 0 / 0.35);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.grid .cover img {
+			transition: transform 0.35s var(--ease-out);
+		}
+		.grid li:hover .cover img {
+			transform: rotate(-2deg) scale(1.03);
+		}
 	}
 	.cover-placeholder {
+		aspect-ratio: 2 / 3;
 		display: grid;
 		place-items: center;
 		background: var(--accent-soft);
@@ -121,7 +130,14 @@ const { books, compact = false } = Astro.props;
 
 	/* Compact list */
 	.compact li {
+		display: grid;
+		grid-template-columns: 2.5rem minmax(0, 1fr);
+		gap: 0.85rem;
+		align-items: center;
 		padding-block: 0.6rem;
+	}
+	.compact .cover-placeholder {
+		font-size: 1rem;
 	}
 	.compact li + li {
 		border-top: 1px solid var(--border);
