@@ -1,0 +1,23 @@
+---
+import type { ComponentProps } from 'astro/types';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+type Props = ComponentProps<typeof BaseHead>;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead {...Astro.props} />
+	</head>
+	<body>
+		<a class="skip-link sr-only" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" class="container">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

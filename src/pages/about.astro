@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SOCIAL_LINKS } from '../site.config';
+
+const github = SOCIAL_LINKS.find((l) => l.name === 'github');
+---
+
+<BaseLayout title="About" description="About Ryan Hinkle.">
+	<div class="prose">
+		<h1>About</h1>
+		<!-- TODO: replace with a real bio. -->
+		<p>
+			I'm Ryan Hinkle. This site is my corner of the internet for writing about projects,
+			things I'm learning, and whatever else I find interesting.
+		</p>
+		<p>
+			You can find my code on {github && <a href={github.href}>GitHub</a>}, or follow along via the
+			<a href="/rss.xml">RSS feed</a>.
+		</p>
+	</div>
+</BaseLayout>

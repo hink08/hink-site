@@ -1,0 +1,23 @@
+// Central place for site-wide settings. Import from anywhere:
+//   import { SITE } from '../site.config';
+
+export const SITE = {
+	// Production URL — used for canonical URLs, the sitemap, and the RSS feed.
+	url: 'https://ryanhinkle.info',
+	title: 'Ryan Hinkle',
+	description: 'Notes, projects, and writing by Ryan Hinkle.',
+	author: 'Ryan Hinkle',
+	locale: 'en-US',
+};
+
+export const NAV_LINKS = [
+	{ href: '/', label: 'Home' },
+	{ href: '/blog', label: 'Blog' },
+	{ href: '/about', label: 'About' },
+];
+
+// Add more entries (e.g. linkedin, email) — icons live in components/SocialLinks.astro.
+export const SOCIAL_LINKS = [
+	{ name: 'github', label: 'GitHub', href: 'https://github.com/hink08' },
+	{ name: 'rss', label: 'RSS feed', href: '/rss.xml' },
+] as const;

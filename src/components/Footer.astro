@@ -1,0 +1,29 @@
+---
+import { SITE } from '../site.config';
+import SocialLinks from './SocialLinks.astro';
+---
+
+<footer>
+	<div class="container">
+		<p>&copy; {new Date().getFullYear()} {SITE.author}</p>
+		<SocialLinks />
+	</div>
+</footer>
+<style>
+	footer {
+		margin-top: 4rem;
+		border-top: 1px solid var(--border);
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+	.container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 2rem;
+	}
+	p {
+		margin: 0;
+	}
+</style>

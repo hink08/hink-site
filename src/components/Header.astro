@@ -1,0 +1,46 @@
+---
+import { NAV_LINKS, SITE } from '../site.config';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav class="container">
+		<a class="brand" href="/">{SITE.title}</a>
+		<ul>
+			{
+				NAV_LINKS.map((link) => (
+					<li>
+						<HeaderLink href={link.href}>{link.label}</HeaderLink>
+					</li>
+				))
+			}
+		</ul>
+	</nav>
+</header>
+<style>
+	header {
+		border-bottom: 1px solid var(--border);
+	}
+	nav {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
+		padding-block: 1.25rem;
+	}
+	.brand {
+		font-weight: 700;
+		font-size: 1.1rem;
+		color: var(--text);
+		text-decoration: none;
+		letter-spacing: -0.01em;
+	}
+	ul {
+		display: flex;
+		gap: 1.25rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+</style>

@@ -1,0 +1,39 @@
+---
+import PostList from '../components/PostList.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../lib/posts';
+
+const recent = (await getPosts()).slice(0, 5);
+---
+
+<BaseLayout>
+	<section class="intro">
+		<h1>Hi, I'm Ryan Hinkle.</h1>
+		<p class="lede">
+			This is where I write about the things I'm building, learning, and thinking about.
+			<a href="/about">More about me →</a>
+		</p>
+	</section>
+
+	<section>
+		<h2>Recent writing</h2>
+		<PostList posts={recent} />
+		<p><a href="/blog">View all posts →</a></p>
+	</section>
+</BaseLayout>
+<style>
+	.intro {
+		margin-block: 2rem 3.5rem;
+	}
+	.lede {
+		font-size: 1.2rem;
+		color: var(--text-muted);
+		max-width: 36rem;
+	}
+	h2 {
+		font-size: 1rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+	}
+</style>
