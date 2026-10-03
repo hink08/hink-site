@@ -5,7 +5,7 @@ export const SITE = {
 	// Production URL — used for canonical URLs, the sitemap, and the RSS feed.
 	url: 'https://ryanhinkle.info',
 	title: 'Ryan Hinkle',
-	description: 'CTO and systems architect in Omaha. Writing on architecture, technical design, and what I’m reading.',
+	description: 'CTO in Omaha, leading teams and designing systems. Writing on architecture, technical design, and what I’m reading.',
 	author: 'Ryan Hinkle',
 	locale: 'en-US',
 };
@@ -30,6 +30,8 @@ export const SOCIAL_LINKS = [
 export const PROFILE = {
 	role: 'Chief Technology Officer',
 	roleShort: 'CTO',
+	/** Short line shown next to the role in the home page label. */
+	tagline: 'Leading teams, designing systems',
 	/** What the role looks like day to day — shown on the About spec sheet. */
 	focus: 'Hands-on architecture & technical design',
 	location: 'Omaha, NE',
