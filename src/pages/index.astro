@@ -1,14 +1,14 @@
 ---
-import { Image } from 'astro:assets';
-import avatar from '../assets/ryan-hinkle.jpg';
 import BookList from '../components/BookList.astro';
 import NoteList from '../components/NoteList.astro';
 import PostList from '../components/PostList.astro';
 import SectionHeader from '../components/SectionHeader.astro';
+import SystemDiagram from '../components/SystemDiagram.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getBooks } from '../lib/books';
 import { getNotes } from '../lib/notes';
 import { getPosts } from '../lib/posts';
+import { PROFILE } from '../site.config';
 
 const posts = await getPosts();
 const notes = await getNotes();
@@ -25,24 +25,21 @@ const sections = [
 
 <BaseLayout>
 	<div class="stack">
-		<section class="hero with-sidebar">
-			<div>
-				<Image class="avatar" src={avatar} alt="Photo of Ryan Hinkle" width={192} height={192} loading="eager" />
-				<p class="label">Hello</p>
+		<section class="hero">
+			<div class="intro">
+				<p class="label">{PROFILE.roleShort} · Systems architect · {PROFILE.location}</p>
 				<h1>I'm Ryan Hinkle.</h1>
 				<p class="lede">
-					This is where I write about the things I'm building, learning, reading, and thinking about.
+					I'm a CTO who still spends most of his time in the technical design: system architecture,
+					platform decisions, and how the pieces fit together. This is where I write about what I'm
+					building, learning, and reading.
 				</p>
 				<p class="actions">
 					<a class="button primary" href="/blog">Read the blog</a>
 					<a class="button" href="/about">About me</a>
 				</p>
 			</div>
-			<aside class="card">
-				<p class="label">Currently reading</p>
-				{reading.length > 0 ? <BookList books={reading} compact /> : <p class="empty">Between books.</p>}
-				<p class="more"><a href="/now">What I'm up to now →</a></p>
-			</aside>
+			<SystemDiagram posts={posts.length} notes={notes.length} reading={reading.length} />
 		</section>
 
 		<div class="with-sidebar">
@@ -50,10 +47,16 @@ const sections = [
 				<SectionHeader title="Recent writing" href="/blog" />
 				<PostList posts={posts.slice(0, 5)} />
 			</section>
-			<section>
-				<SectionHeader title="Latest notes" href="/notes" linkLabel="All" />
-				<NoteList notes={notes.slice(0, 4)} full={false} />
-			</section>
+			<div class="side">
+				<section>
+					<SectionHeader title="Currently reading" href="/books" linkLabel="Shelf" />
+					{reading.length > 0 ? <BookList books={reading} compact /> : <p class="empty">Between books.</p>}
+				</section>
+				<section>
+					<SectionHeader title="Latest notes" href="/notes" linkLabel="All" />
+					<NoteList notes={notes.slice(0, 4)} full={false} />
+				</section>
+			</div>
 		</div>
 
 		<section>
@@ -81,19 +84,12 @@ const sections = [
 </BaseLayout>
 <style>
 	.hero {
-		padding-block: 1rem 3rem;
-		border-bottom: 1px solid var(--border);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+		gap: var(--gap);
 		align-items: center;
-	}
-	.avatar {
-		display: block;
-		width: 6rem;
-		height: 6rem;
-		margin-bottom: 1.5rem;
-		border-radius: 50%;
-		object-fit: cover;
-		border: 3px solid var(--bg);
-		box-shadow: 0 0 0 1px var(--border);
+		padding-block: 0.5rem 3rem;
+		border-bottom: 1px solid var(--border);
 	}
 	h1 {
 		margin-block: 0.5rem 1rem;
@@ -102,7 +98,7 @@ const sections = [
 	.lede {
 		font-size: 1.25rem;
 		color: var(--text-muted);
-		max-width: 34rem;
+		max-width: 32rem;
 		margin: 0;
 	}
 	.actions {
@@ -111,23 +107,81 @@ const sections = [
 		gap: 0.75rem;
 		margin-top: 1.75rem;
 	}
-	.hero .card .label {
-		margin-bottom: 0.25rem;
+	@media (max-width: 860px) {
+		.hero {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.hero :global(.diagram) {
+			justify-self: center;
+		}
 	}
-	.more {
-		margin-top: 0.75rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--border);
-		font-size: 0.9rem;
+
+	.side > * + * {
+		margin-top: 2.5rem;
 	}
+
+	/* Explore: cards hang off a shared bus line, like modules on a system diagram. */
 	.sections {
+		position: relative;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 1rem;
 		list-style: none;
 		margin: 1rem 0 0;
-		padding: 0;
+		padding: 1.75rem 0 0;
 	}
+	.sections::before {
+		content: '';
+		position: absolute;
+		top: 0.5rem;
+		left: 12.5%;
+		right: 12.5%;
+		height: 1px;
+		background: var(--wire);
+	}
+	.sections li {
+		position: relative;
+	}
+	.sections li::before,
+	.sections li::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		pointer-events: none;
+	}
+	/* Vertical stub from the bus down to the card. */
+	.sections li::before {
+		top: -1.25rem;
+		height: 1.25rem;
+		width: 1px;
+		background: var(--wire);
+	}
+	/* Junction dot on the bus. */
+	.sections li::after {
+		top: -1.25rem;
+		width: 5px;
+		height: 5px;
+		margin: -2px 0 0 -2px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	@media (max-width: 860px) {
+		.sections {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			padding-top: 0;
+		}
+		.sections::before,
+		.sections li::before,
+		.sections li::after {
+			display: none;
+		}
+	}
+	@media (max-width: 480px) {
+		.sections {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
 	.sections a {
 		display: flex;
 		flex-direction: column;
@@ -135,18 +189,9 @@ const sections = [
 		height: 100%;
 		color: inherit;
 		text-decoration: none;
-		transition: border-color 0.15s;
 	}
 	.sections a:hover {
 		border-color: var(--accent);
-	}
-	@media (prefers-reduced-motion: no-preference) {
-		.avatar {
-			transition: transform 0.4s var(--ease-out);
-		}
-		.avatar:hover {
-			transform: rotate(-4deg) scale(1.05);
-		}
 	}
 	.sections a:hover .name {
 		color: var(--accent);

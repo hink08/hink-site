@@ -6,16 +6,22 @@
  */
 :root {
 	color-scheme: light dark;
-	--bg: light-dark(#f7f9fc, #0b1220);
-	--surface: light-dark(#eef2f8, #111a2b);
-	--surface-2: light-dark(#e2e8f2, #1a2539);
+	--bg: light-dark(#f7f9fc, #0a1527);
+	--surface: light-dark(#eef2f8, #0f1d33);
+	--surface-2: light-dark(#e2e8f2, #172842);
 	--text: light-dark(#0f1b2d, #e6ebf3);
 	--text-muted: light-dark(#55627a, #94a3b8);
-	--border: light-dark(#dbe3ee, #1e2a40);
+	--border: light-dark(#dbe3ee, #1f3150);
 	--accent: light-dark(#1f5bd1, #6ea8ff);
 	--accent-soft: light-dark(#e1eafc, #14233f);
 	--code-bg: light-dark(#eaf0f8, #111a2b);
 	--star: light-dark(#b7791f, #f0c063);
+
+	/* Blueprint drafting: grid lines, corner marks, wires. */
+	--grid: light-dark(rgb(31 91 209 / 0.045), rgb(110 168 255 / 0.03));
+	--grid-major: light-dark(rgb(31 91 209 / 0.08), rgb(110 168 255 / 0.06));
+	--mark: light-dark(rgb(31 91 209 / 0.5), rgb(110 168 255 / 0.55));
+	--wire: light-dark(rgb(31 91 209 / 0.45), rgb(110 168 255 / 0.5));
 
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	--wide: 68rem; /* page frame */
@@ -44,7 +50,19 @@ html {
 
 body {
 	margin: 0;
-	background: var(--bg);
+	/* Blueprint grid: minor lines every 24px, major every 120px. */
+	background-color: var(--bg);
+	background-image:
+		linear-gradient(var(--grid-major) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+		linear-gradient(var(--grid) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+	background-size:
+		120px 120px,
+		120px 120px,
+		24px 24px,
+		24px 24px;
+	background-position: center top;
 	color: var(--text);
 	font-family: var(--font-atkinson);
 	font-size: 1.0625rem;
@@ -56,6 +74,7 @@ body {
 }
 
 main {
+	counter-reset: fig; /* numbers SectionHeaders as FIG. 01, 02, … */
 	flex: 1;
 	padding-block: 3rem 1rem;
 }
@@ -142,6 +161,45 @@ hr {
 	border: 1px solid var(--border);
 	border-radius: var(--radius);
 	padding: 1.25rem 1.35rem;
+}
+
+/* Drafting corner marks just outside the box (applied to every .card, or opt in with .drafted). */
+.card,
+.drafted {
+	position: relative;
+}
+.card::before,
+.drafted::before {
+	--l: 9px;
+	content: '';
+	position: absolute;
+	inset: -5px;
+	pointer-events: none;
+	background:
+		linear-gradient(var(--mark) 0 0) top left / var(--l) 1px,
+		linear-gradient(var(--mark) 0 0) top left / 1px var(--l),
+		linear-gradient(var(--mark) 0 0) top right / var(--l) 1px,
+		linear-gradient(var(--mark) 0 0) top right / 1px var(--l),
+		linear-gradient(var(--mark) 0 0) bottom left / var(--l) 1px,
+		linear-gradient(var(--mark) 0 0) bottom left / 1px var(--l),
+		linear-gradient(var(--mark) 0 0) bottom right / var(--l) 1px,
+		linear-gradient(var(--mark) 0 0) bottom right / 1px var(--l);
+	background-repeat: no-repeat;
+	opacity: 0.6;
+}
+.lift:hover::before {
+	opacity: 1;
+}
+
+/* Dimension line: a rule with end ticks, like a measurement on a drawing. */
+.dim-line {
+	position: relative;
+	height: 9px;
+	background:
+		linear-gradient(var(--mark) 0 0) center / 100% 1px,
+		linear-gradient(var(--mark) 0 0) left center / 1px 100%,
+		linear-gradient(var(--mark) 0 0) right center / 1px 100%;
+	background-repeat: no-repeat;
 }
 .card > :first-child {
 	margin-top: 0;
@@ -350,6 +408,14 @@ td {
 	.lift:hover {
 		translate: 0 -3px;
 		box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.35);
+	}
+	.lift::before {
+		transition:
+			inset 0.25s var(--ease-out),
+			opacity 0.25s;
+	}
+	.lift:hover::before {
+		inset: -8px;
 	}
 
 	.button {

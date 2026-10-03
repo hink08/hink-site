@@ -2,12 +2,22 @@
 import { Image } from 'astro:assets';
 import avatar from '../assets/ryan-hinkle.jpg';
 import PageHeader from '../components/PageHeader.astro';
+import SectionHeader from '../components/SectionHeader.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE, SOCIAL_LINKS } from '../site.config';
+import { PROFILE, SITE, SOCIAL_LINKS } from '../site.config';
 
 const github = SOCIAL_LINKS.find((l) => l.name === 'github');
 const linkedin = SOCIAL_LINKS.find((l) => l.name === 'linkedin');
+
+const specs = [
+	{ label: 'Role', value: PROFILE.role },
+	{ label: 'Focus', value: PROFILE.focus },
+	{ label: 'Based in', value: PROFILE.location },
+	{ label: 'Company', value: PROFILE.employer.name },
+	{ label: 'Education', value: PROFILE.schoolFull },
+	{ label: 'Interests', value: PROFILE.interests.join(' · ') },
+];
 ---
 
 <BaseLayout title="About" description="About Ryan Hinkle.">
@@ -17,14 +27,33 @@ const linkedin = SOCIAL_LINKS.find((l) => l.name === 'linkedin');
 		<div class="prose measure">
 			<!-- TODO: replace with a real bio. -->
 			<p>
-				I'm Ryan Hinkle. This site is my corner of the internet for writing about projects, things I'm
-				learning, books I'm reading, and whatever else I find interesting.
+				I'm Ryan Hinkle, Chief Technology Officer at {PROFILE.employer.name}, based in {PROFILE.location}.
+				The title says leadership, but a lot of my week is still technical design work: system
+				architecture, platform and infrastructure decisions, and digging into how the pieces fit together.
 			</p>
 			<p>
-				You can connect with me on {linkedin && <a href={linkedin.href}>LinkedIn</a>}, find my code on
-				{github && <a href={github.href}>GitHub</a>}, or follow along via the
+				This site is where I write about that work, the things I'm learning, the books I'm reading, and
+				whatever else I find interesting.
+			</p>
+			<p>
+				You can connect with me on {linkedin && <a href={linkedin.href}>LinkedIn</a>}, find my code on{' '}
+				{github && <a href={github.href}>GitHub</a>}, or follow along via the{' '}
 				<a href="/rss.xml">RSS feed</a>.
 			</p>
+
+			<section class="specs">
+				<SectionHeader title="Specifications" />
+				<dl>
+					{
+						specs.map((s) => (
+							<div>
+								<dt class="label">{s.label}</dt>
+								<dd>{s.value}</dd>
+							</div>
+						))
+					}
+				</dl>
+			</section>
 		</div>
 
 		<aside class="card profile">
@@ -43,6 +72,31 @@ const linkedin = SOCIAL_LINKS.find((l) => l.name === 'linkedin');
 	</div>
 </BaseLayout>
 <style>
+	.specs {
+		margin-top: 3rem;
+	}
+	.specs dl {
+		margin: 0;
+	}
+	.specs dl div {
+		display: grid;
+		grid-template-columns: 8rem minmax(0, 1fr);
+		gap: 1rem;
+		padding-block: 0.7rem;
+		border-bottom: 1px dashed var(--border);
+	}
+	.specs dt {
+		padding-top: 0.2rem;
+	}
+	.specs dd {
+		margin: 0;
+	}
+	@media (max-width: 480px) {
+		.specs dl div {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.1rem;
+		}
+	}
 	.photo {
 		display: block;
 		width: 7.5rem;

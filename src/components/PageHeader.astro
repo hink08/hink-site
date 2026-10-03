@@ -1,5 +1,6 @@
 ---
-// Consistent top-of-page block: eyebrow label, title, intro, optional extras.
+// Consistent top-of-page block: eyebrow label, title, intro, optional extras,
+// finished with a dimension line (rule with end ticks) instead of a plain border.
 interface Props {
 	eyebrow?: string;
 	title: string;
@@ -14,12 +15,11 @@ const { eyebrow, title, description } = Astro.props;
 	<h1>{title}</h1>
 	{description && <p class="description">{description}</p>}
 	<slot />
+	<div class="dim-line" aria-hidden="true"></div>
 </header>
 <style>
 	.page-header {
-		padding-bottom: 2rem;
 		margin-bottom: 2.5rem;
-		border-bottom: 1px solid var(--border);
 	}
 	h1 {
 		margin-top: 0.35rem;
@@ -30,5 +30,8 @@ const { eyebrow, title, description } = Astro.props;
 		margin: 0;
 		font-size: 1.15rem;
 		color: var(--text-muted);
+	}
+	.dim-line {
+		margin-top: 2rem;
 	}
 </style>

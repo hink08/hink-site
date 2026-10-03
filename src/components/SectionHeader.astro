@@ -1,17 +1,20 @@
 ---
 // Section title with an optional "view all" style link on the right.
+// Titles are auto-numbered per page ("FIG. 01 — …") like figures on a drawing.
 interface Props {
 	title: string;
 	href?: string;
 	linkLabel?: string;
 	id?: string;
+	/** Set false to skip the FIG. number. */
+	numbered?: boolean;
 }
 
-const { title, href, linkLabel = 'View all', id } = Astro.props;
+const { title, href, linkLabel = 'View all', id, numbered = true } = Astro.props;
 ---
 
 <div class="section-header">
-	<h2 class="label" id={id}>{title}<slot /></h2>
+	<h2 class:list={['label', { numbered }]} id={id}>{title}<slot /></h2>
 	{href && <a href={href}>{linkLabel} →</a>}
 </div>
 <style>
@@ -23,6 +26,11 @@ const { title, href, linkLabel = 'View all', id } = Astro.props;
 		padding-bottom: 0.6rem;
 		margin-bottom: 0.5rem;
 		border-bottom: 1px solid var(--border);
+	}
+	.numbered::before {
+		counter-increment: fig;
+		content: 'Fig. ' counter(fig, decimal-leading-zero) ' — ';
+		color: var(--accent);
 	}
 	a {
 		font-size: 0.9rem;

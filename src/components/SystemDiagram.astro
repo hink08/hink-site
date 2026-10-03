@@ -1,0 +1,208 @@
+---
+// "System overview" diagram for the home page hero: Ryan's photo as the hub,
+// wired out to six facts. Wires draw in on load; facts come from PROFILE in
+// site.config.ts plus live counts passed in as props.
+import { getImage } from 'astro:assets';
+import avatar from '../assets/ryan-hinkle.jpg';
+import { PROFILE, SITE } from '../site.config';
+
+interface Props {
+	posts: number;
+	notes: number;
+	reading: number;
+}
+
+const { posts, notes, reading } = Astro.props;
+const hub = await getImage({ src: avatar, width: 192, height: 192, format: 'webp' });
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+// Layout (440×400 drawing space, viewBox cropped to the content): hub at (220,200); nodes in two columns of three.
+// Each wire is an orthogonal path from the hub's edge to the node's edge.
+const nodes = [
+	{ label: 'Based in', value: PROFILE.location, cx: 75, cy: 70, wire: 'M190 165 V70 H133' },
+	{ label: `${PROFILE.roleShort} at`, value: PROFILE.employer.name, href: PROFILE.employer.href, cx: 365, cy: 70, wire: 'M250 165 V70 H307' },
+	{ label: 'Alma mater', value: PROFILE.school, cx: 75, cy: 200, wire: 'M174 200 H133' },
+	{ label: 'Reading', value: `${plural(reading, 'book')} now`, href: '/books', cx: 365, cy: 200, wire: 'M266 200 H307' },
+	{ label: 'Writing', value: `${plural(posts, 'post')} · ${plural(notes, 'note')}`, href: '/blog', cx: 75, cy: 330, wire: 'M190 235 V330 H133' },
+	{ label: 'Building', value: 'This site', href: PROFILE.repo, cx: 365, cy: 330, wire: 'M250 235 V330 H307' },
+];
+const W = 116;
+const H = 48;
+const end = (wire: string) => {
+	const nums = wire.match(/-?\d+/g)!.map(Number);
+	// Paths are "M x y (V y)? H x" — start is (x, y); end is (last H, last y).
+	const [sx, sy] = nums;
+	const ex = nums[nums.length - 1];
+	const ey = wire.includes('V') ? nums[2] : sy;
+	return { sx, sy, ex, ey };
+};
+---
+
+<figure class="diagram">
+	<svg viewBox="0 36 440 328" role="img" aria-labelledby="diagram-title">
+		<title id="diagram-title">
+			System overview of {SITE.author}: {nodes.map((n) => `${n.label} ${n.value}`).join('; ')}
+		</title>
+		<defs>
+			<clipPath id="hub-clip"><circle cx="220" cy="200" r="44"></circle></clipPath>
+		</defs>
+
+		<!-- Hub: centre marks, slowly turning dashed ring, photo. -->
+		<g class="hub" aria-hidden="true">
+			<line class="tick" x1="220" y1="138" x2="220" y2="146"></line>
+			<line class="tick" x1="220" y1="254" x2="220" y2="262"></line>
+			<circle class="ring-dash" cx="220" cy="200" r="54"></circle>
+			<circle class="ring" cx="220" cy="200" r="46"></circle>
+			<image href={hub.src} x="176" y="156" width="88" height="88" clip-path="url(#hub-clip)" preserveAspectRatio="xMidYMid slice"></image>
+		</g>
+
+		{
+			nodes.map((n, i) => {
+				const { sx, sy, ex, ey } = end(n.wire);
+				const box = (
+					<g class:list={['node', { linked: n.href }]} style={`--i:${i}`}>
+						<rect x={n.cx - W / 2} y={n.cy - H / 2} width={W} height={H} rx="4"></rect>
+						<text class="node-label" x={n.cx - W / 2 + 10} y={n.cy - 5}>
+							{n.label}
+						</text>
+						<text class="node-value" x={n.cx - W / 2 + 10} y={n.cy + 13}>
+							{n.value}
+						</text>
+					</g>
+				);
+				return (
+					<g aria-hidden={n.href ? undefined : 'true'}>
+						<path class="wire" d={n.wire} pathLength="1" style={`--i:${i}`}></path>
+						<circle class="dot" cx={sx} cy={sy} r="2.5" style={`--i:${i}`}></circle>
+						<circle class="dot" cx={ex} cy={ey} r="2.5" style={`--i:${i}`}></circle>
+						{n.href ? (
+							<a href={n.href} target={n.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+								<title>{`${n.label}: ${n.value}`}</title>
+								{box}
+							</a>
+						) : (
+							box
+						)}
+					</g>
+				);
+			})
+		}
+	</svg>
+	<figcaption class="label">Fig. 00 — System overview · Scale 1:1</figcaption>
+</figure>
+
+<style>
+	.diagram {
+		margin: 0;
+		width: 100%;
+		max-width: 30rem;
+		justify-self: end;
+	}
+	svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		overflow: visible;
+	}
+	figcaption {
+		margin-top: 0.75rem;
+		text-align: center;
+		font-size: 0.68rem;
+	}
+
+	.wire {
+		fill: none;
+		stroke: var(--wire);
+		stroke-width: 1.25;
+	}
+	.dot {
+		fill: var(--accent);
+	}
+	.tick {
+		stroke: var(--mark);
+		stroke-width: 1;
+	}
+	.ring {
+		fill: var(--surface);
+		stroke: var(--accent);
+		stroke-width: 1.5;
+	}
+	.ring-dash {
+		fill: none;
+		stroke: var(--mark);
+		stroke-width: 1;
+		stroke-dasharray: 3 5;
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
+	.node rect {
+		fill: var(--surface);
+		stroke: var(--border);
+		stroke-width: 1;
+		transition:
+			stroke 0.2s,
+			fill 0.2s;
+	}
+	.node-label {
+		font-family: var(--font-mono);
+		font-size: 8.5px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		fill: var(--text-muted);
+	}
+	.node-value {
+		font-family: var(--font-atkinson);
+		font-size: 13px;
+		font-weight: 700;
+		fill: var(--text);
+	}
+	.linked rect {
+		stroke: var(--wire);
+	}
+	a:hover .node rect,
+	a:focus-visible .node rect {
+		stroke: var(--accent);
+		fill: var(--accent-soft);
+	}
+	a:hover .node-value,
+	a:focus-visible .node-value {
+		fill: var(--accent);
+	}
+	a:focus-visible {
+		outline: none;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.wire {
+			stroke-dasharray: 1;
+			stroke-dashoffset: 1;
+			animation: draw 0.8s var(--ease-out) forwards;
+			animation-delay: calc(var(--i) * 90ms + 250ms);
+		}
+		.node,
+		.dot {
+			opacity: 0;
+			animation: appear 0.5s var(--ease-out) forwards;
+			animation-delay: calc(var(--i) * 90ms + 650ms);
+		}
+		.ring-dash {
+			animation: spin 80s linear infinite;
+		}
+	}
+	@keyframes draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes appear {
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes spin {
+		to {
+			rotate: 360deg;
+		}
+	}
+</style>

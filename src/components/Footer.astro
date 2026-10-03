@@ -1,5 +1,16 @@
 ---
-import { NAV_LINKS, SITE, SOCIAL_LINKS } from '../site.config';
+import { NAV_LINKS, PROFILE, SITE, SOCIAL_LINKS } from '../site.config';
+
+// Drafting "title block" values. Rev is the build date.
+const now = new Date();
+const rev = [now.getUTCFullYear(), now.getUTCMonth() + 1, now.getUTCDate()].map((n) => String(n).padStart(2, '0')).join('.');
+const titleBlock = [
+	{ label: 'Drawn by', value: SITE.author },
+	{ label: 'Location', value: PROFILE.location },
+	{ label: 'Project', value: new URL(SITE.url).host },
+	{ label: 'Rev', value: rev },
+	{ label: 'Sheet', value: '1 of 1' },
+];
 ---
 
 <footer class="site-footer">
@@ -26,7 +37,17 @@ import { NAV_LINKS, SITE, SOCIAL_LINKS } from '../site.config';
 				</ul>
 			</div>
 		</div>
-		<p class="copyright">&copy; {new Date().getFullYear()} {SITE.author}</p>
+		<dl class="title-block">
+			{
+				titleBlock.map((cell) => (
+					<div>
+						<dt class="label">{cell.label}</dt>
+						<dd>{cell.value}</dd>
+					</div>
+				))
+			}
+		</dl>
+		<p class="copyright">&copy; {now.getFullYear()} {SITE.author}</p>
 	</div>
 </footer>
 <style>
@@ -68,9 +89,30 @@ import { NAV_LINKS, SITE, SOCIAL_LINKS } from '../site.config';
 	ul a:hover {
 		color: var(--accent);
 	}
+
+	/* Title block: bordered cells like the corner of an engineering drawing. */
+	.title-block {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+		gap: 1px;
+		margin: 0;
+		background: var(--mark);
+		border: 1px solid var(--mark);
+	}
+	.title-block div {
+		padding: 0.5rem 0.75rem;
+		background: var(--surface);
+	}
+	.title-block dt {
+		font-size: 0.62rem;
+	}
+	.title-block dd {
+		margin: 0.1rem 0 0;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+	}
 	.copyright {
 		padding-block: 1.25rem;
-		border-top: 1px solid var(--border);
 		color: var(--text-muted);
 		font-size: 0.85rem;
 	}
