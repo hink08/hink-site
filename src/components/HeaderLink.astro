@@ -14,16 +14,20 @@ const isActive = target === '/' ? path === '/' : path === target || path.startsW
 </a>
 <style>
 	a {
+		display: block;
+		padding: 0.3rem 0.75rem;
+		border-radius: 999px;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.25rem 0;
-		border-bottom: 2px solid transparent;
+		font-size: 0.95rem;
+		white-space: nowrap;
 	}
 	a:hover {
 		color: var(--text);
+		background: var(--surface);
 	}
 	a.active {
-		color: var(--text);
-		border-bottom-color: var(--accent);
+		color: var(--accent);
+		background: var(--accent-soft);
 	}
 </style>

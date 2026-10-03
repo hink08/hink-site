@@ -1,0 +1,98 @@
+---
+import { render } from 'astro:content';
+import { type Note, noteUrl } from '../lib/notes';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	notes: Note[];
+	/** Render each note's full body inline (notes are short). Otherwise just titles. */
+	full?: boolean;
+}
+
+const { notes, full = true } = Astro.props;
+const rendered = await Promise.all(notes.map(async (note) => ({ note, ...(await render(note)) })));
+---
+
+{
+	notes.length === 0 ? (
+		<p class="empty">No notes yet.</p>
+	) : (
+		<ol class:list={['notes', { full }]}>
+			{rendered.map(({ note, Content }) => (
+				<li>
+					<article>
+						<a class="date" href={noteUrl(note)}>
+							<FormattedDate date={note.data.pubDate} />
+						</a>
+						<a class="title" href={noteUrl(note)}>
+							{note.data.title}
+						</a>
+						{full && (
+							<div class="prose">
+								<Content />
+							</div>
+						)}
+					</article>
+				</li>
+			))}
+		</ol>
+	)
+}
+<style>
+	.notes {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	li {
+		padding-block: 0.9rem;
+	}
+	li + li {
+		border-top: 1px solid var(--border);
+	}
+	article {
+		display: flex;
+		flex-direction: column;
+	}
+	.full li {
+		padding-block: 1.5rem;
+	}
+	.full article {
+		display: grid;
+		grid-template-columns: 7rem minmax(0, 1fr);
+		column-gap: 1.25rem;
+	}
+	.full .date {
+		grid-row: span 2;
+		padding-top: 0.15rem;
+	}
+	.date {
+		color: var(--text-muted);
+		font-size: 0.8rem;
+		font-family: var(--font-mono);
+		text-decoration: none;
+		font-variant-numeric: tabular-nums;
+	}
+	.title {
+		font-weight: 700;
+		color: var(--text);
+		text-decoration: none;
+	}
+	.title:hover {
+		color: var(--accent);
+	}
+	.prose {
+		margin-top: 0.35rem;
+	}
+	.prose > :global(:last-child) {
+		margin-bottom: 0;
+	}
+	@media (max-width: 560px) {
+		.full article {
+			grid-template-columns: 1fr;
+		}
+		.full .date {
+			grid-row: auto;
+		}
+	}
+</style>

@@ -1,0 +1,35 @@
+---
+// Section title with an optional "view all" style link on the right.
+interface Props {
+	title: string;
+	href?: string;
+	linkLabel?: string;
+	id?: string;
+}
+
+const { title, href, linkLabel = 'View all', id } = Astro.props;
+---
+
+<div class="section-header">
+	<h2 class="label" id={id}>{title}<slot /></h2>
+	{href && <a href={href}>{linkLabel} →</a>}
+</div>
+<style>
+	.section-header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-bottom: 0.6rem;
+		margin-bottom: 0.5rem;
+		border-bottom: 1px solid var(--border);
+	}
+	a {
+		font-size: 0.9rem;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+</style>

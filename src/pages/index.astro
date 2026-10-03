@@ -1,39 +1,145 @@
 ---
+import BookList from '../components/BookList.astro';
+import NoteList from '../components/NoteList.astro';
 import PostList from '../components/PostList.astro';
+import SectionHeader from '../components/SectionHeader.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBooks } from '../lib/books';
+import { getNotes } from '../lib/notes';
 import { getPosts } from '../lib/posts';
 
-const recent = (await getPosts()).slice(0, 5);
+const posts = await getPosts();
+const notes = await getNotes();
+const books = await getBooks();
+const reading = books.filter((b) => b.data.status === 'reading');
+
+const sections = [
+	{ href: '/blog', title: 'Blog', text: 'Longer writing on projects and ideas.', count: posts.length, unit: 'post' },
+	{ href: '/notes', title: 'Notes', text: 'Short thoughts and things I’ve learned.', count: notes.length, unit: 'note' },
+	{ href: '/books', title: 'Books', text: 'What I’m reading and what I thought.', count: books.length, unit: 'book' },
+	{ href: '/now', title: 'Now', text: 'What I’m focused on at the moment.' },
+];
 ---
 
 <BaseLayout>
-	<section class="intro">
-		<h1>Hi, I'm Ryan Hinkle.</h1>
-		<p class="lede">
-			This is where I write about the things I'm building, learning, and thinking about.
-			<a href="/about">More about me →</a>
-		</p>
-	</section>
+	<div class="stack">
+		<section class="hero with-sidebar">
+			<div>
+				<p class="label">Hello</p>
+				<h1>I'm Ryan Hinkle.</h1>
+				<p class="lede">
+					This is where I write about the things I'm building, learning, reading, and thinking about.
+				</p>
+				<p class="actions">
+					<a class="button primary" href="/blog">Read the blog</a>
+					<a class="button" href="/about">About me</a>
+				</p>
+			</div>
+			<aside class="card">
+				<p class="label">Currently reading</p>
+				{reading.length > 0 ? <BookList books={reading} compact /> : <p class="empty">Between books.</p>}
+				<p class="more"><a href="/now">What I'm up to now →</a></p>
+			</aside>
+		</section>
 
-	<section>
-		<h2>Recent writing</h2>
-		<PostList posts={recent} />
-		<p><a href="/blog">View all posts →</a></p>
-	</section>
+		<div class="with-sidebar">
+			<section>
+				<SectionHeader title="Recent writing" href="/blog" />
+				<PostList posts={posts.slice(0, 5)} />
+			</section>
+			<section>
+				<SectionHeader title="Latest notes" href="/notes" linkLabel="All" />
+				<NoteList notes={notes.slice(0, 4)} full={false} />
+			</section>
+		</div>
+
+		<section>
+			<SectionHeader title="Explore" />
+			<ul class="sections">
+				{
+					sections.map((s) => (
+						<li>
+							<a class="card" href={s.href}>
+								<span class="name">{s.title}</span>
+								<span class="text">{s.text}</span>
+								{s.count !== undefined && (
+									<span class="label">
+										{s.count} {s.unit}
+										{s.count === 1 ? '' : 's'}
+									</span>
+								)}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</section>
+	</div>
 </BaseLayout>
 <style>
-	.intro {
-		margin-block: 2rem 3.5rem;
+	.hero {
+		padding-block: 1rem 3rem;
+		border-bottom: 1px solid var(--border);
+		align-items: center;
+	}
+	h1 {
+		margin-block: 0.5rem 1rem;
+		font-size: clamp(2.4rem, 5vw, 3.25rem);
 	}
 	.lede {
-		font-size: 1.2rem;
+		font-size: 1.25rem;
 		color: var(--text-muted);
-		max-width: 36rem;
+		max-width: 34rem;
+		margin: 0;
 	}
-	h2 {
-		font-size: 1rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 1.75rem;
+	}
+	.hero .card .label {
+		margin-bottom: 0.25rem;
+	}
+	.more {
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--border);
+		font-size: 0.9rem;
+	}
+	.sections {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+		gap: 1rem;
+		list-style: none;
+		margin: 1rem 0 0;
+		padding: 0;
+	}
+	.sections a {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+		transition: border-color 0.15s;
+	}
+	.sections a:hover {
+		border-color: var(--accent);
+	}
+	.sections a:hover .name {
+		color: var(--accent);
+	}
+	.name {
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+	.text {
 		color: var(--text-muted);
+		font-size: 0.92rem;
+		flex: 1;
+	}
+	.sections .label {
+		margin-top: 0.5rem;
 	}
 </style>

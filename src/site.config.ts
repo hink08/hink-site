@@ -13,6 +13,9 @@ export const SITE = {
 export const NAV_LINKS = [
 	{ href: '/', label: 'Home' },
 	{ href: '/blog', label: 'Blog' },
+	{ href: '/notes', label: 'Notes' },
+	{ href: '/books', label: 'Books' },
+	{ href: '/now', label: 'Now' },
 	{ href: '/about', label: 'About' },
 ];
 

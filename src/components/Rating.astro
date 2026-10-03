@@ -1,0 +1,22 @@
+---
+interface Props {
+	value: number;
+	max?: number;
+}
+
+const { value, max = 5 } = Astro.props;
+---
+
+<span class="rating" role="img" aria-label={`${value} out of ${max} stars`}>
+	{Array.from({ length: max }, (_, i) => <span class:list={{ on: i < value }} aria-hidden="true">★</span>)}
+</span>
+<style>
+	.rating {
+		letter-spacing: 0.05em;
+		white-space: nowrap;
+		color: var(--border);
+	}
+	.on {
+		color: var(--star);
+	}
+</style>

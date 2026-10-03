@@ -1,0 +1,73 @@
+---
+import BookList from '../../components/BookList.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getBooks, SHELF_ORDER, STATUS_LABELS } from '../../lib/books';
+
+const books = await getBooks();
+const shelves = SHELF_ORDER.map((status) => ({
+	status,
+	label: STATUS_LABELS[status],
+	books: books.filter((b) => b.data.status === status),
+})).filter((shelf) => shelf.books.length > 0);
+---
+
+<BaseLayout title="Books" description="What I'm reading, what I've read, and what's next.">
+	<PageHeader eyebrow="Bookshelf" title="Books" description="What I'm reading, what I've read, and what's next. Books marked notes have a write-up.">
+		{
+			shelves.length > 0 && (
+				<nav class="jump" aria-label="Shelves">
+					{shelves.map((s) => (
+						<a href={`#${s.status}`}>
+							{s.label} <span>{s.books.length}</span>
+						</a>
+					))}
+				</nav>
+			)
+		}
+	</PageHeader>
+
+	{books.length === 0 && <p class="empty">The shelf is empty for now.</p>}
+
+	<div class="stack">
+		{
+			shelves.map((shelf) => (
+				<section>
+					<SectionHeader id={shelf.status} title={shelf.label} />
+					<div class="shelf">
+						<BookList books={shelf.books} />
+					</div>
+				</section>
+			))
+		}
+	</div>
+</BaseLayout>
+<style>
+	.jump {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 1.25rem;
+	}
+	.jump a {
+		padding: 0.25rem 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text);
+		text-decoration: none;
+		font-size: 0.9rem;
+	}
+	.jump a:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.jump span {
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+	}
+	.shelf {
+		margin-top: 1rem;
+	}
+</style>

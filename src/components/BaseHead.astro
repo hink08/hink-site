@@ -20,6 +20,20 @@ const imageURL = image ? new URL(image.src, Astro.site) : undefined;
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="color-scheme" content="light dark" />
+<!--
+	Runs before first paint so there's no flash of the wrong theme.
+	A saved choice (from ThemeToggle) wins; otherwise follow the OS preference.
+-->
+<script is:inline>
+	(() => {
+		let saved = null;
+		try {
+			saved = localStorage.getItem('theme');
+		} catch {}
+		const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		document.documentElement.dataset.theme = saved === 'light' || saved === 'dark' ? saved : system;
+	})();
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('rss.xml', Astro.site)} />

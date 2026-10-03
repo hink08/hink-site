@@ -1,0 +1,98 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Rating from '../../components/Rating.astro';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { type Book, getBooks, hasNotes, STATUS_LABELS } from '../../lib/books';
+
+// Only books with notes in their Markdown body get a page.
+export async function getStaticPaths() {
+	const books = (await getBooks()).filter(hasNotes);
+	return books.map((book) => ({ params: { slug: book.id }, props: book }));
+}
+
+type Props = Book;
+
+const book = Astro.props;
+const { title, author, status, started, finished, rating, cover, link, summary, tags } = book.data;
+const { Content } = await render(book);
+---
+
+<ArticleLayout
+	title={`${title} by ${author}`}
+	heading={title}
+	subtitle={`by ${author}`}
+	description={summary ?? `Notes on ${title} by ${author}.`}
+	image={cover}
+	type="article"
+	eyebrow="Book notes"
+	back={{ href: '/books', label: 'Bookshelf' }}
+>
+	<Fragment slot="meta">
+		{cover && <Image class="cover" src={cover} alt={`Cover of ${title}`} width={208} height={312} />}
+		<dl>
+			<div>
+				<dt>Status</dt>
+				<dd>{STATUS_LABELS[status]}</dd>
+			</div>
+			{
+				rating && (
+					<div>
+						<dt>Rating</dt>
+						<dd>
+							<Rating value={rating} />
+						</dd>
+					</div>
+				)
+			}
+			{
+				started && (
+					<div>
+						<dt>Started</dt>
+						<dd>
+							<FormattedDate date={started} />
+						</dd>
+					</div>
+				)
+			}
+			{
+				finished && (
+					<div>
+						<dt>Finished</dt>
+						<dd>
+							<FormattedDate date={finished} />
+						</dd>
+					</div>
+				)
+			}
+			{
+				tags.length > 0 && (
+					<div>
+						<dt>Tags</dt>
+						<dd>
+							<ul class="tags">
+								{tags.map((tag) => (
+									<li>{tag}</li>
+								))}
+							</ul>
+						</dd>
+					</div>
+				)
+			}
+		</dl>
+		{link && <a href={link} target="_blank" rel="noopener">About the book ↗</a>}
+	</Fragment>
+	<Content />
+</ArticleLayout>
+<style>
+	.cover {
+		width: 8rem;
+		height: auto;
+		border-radius: 4px;
+		box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+	}
+	.tags {
+		margin-top: 0.3rem;
+	}
+</style>

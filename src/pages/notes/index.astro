@@ -1,0 +1,20 @@
+---
+import NoteList from '../../components/NoteList.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getNotes } from '../../lib/notes';
+
+const notes = await getNotes();
+---
+
+<BaseLayout title="Notes" description="Short thoughts, links, and half-formed ideas.">
+	<PageHeader eyebrow={`${notes.length} note${notes.length === 1 ? '' : 's'}`} title="Notes" description="Short thoughts, links, and half-formed ideas — less polished than the blog." />
+	<div class="feed">
+		<NoteList notes={notes} />
+	</div>
+</BaseLayout>
+<style>
+	.feed {
+		max-width: 50rem;
+	}
+</style>

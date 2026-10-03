@@ -1,4 +1,5 @@
 ---
+import PageHeader from '../components/PageHeader.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SOCIAL_LINKS } from '../site.config';
 
@@ -6,16 +7,41 @@ const github = SOCIAL_LINKS.find((l) => l.name === 'github');
 ---
 
 <BaseLayout title="About" description="About Ryan Hinkle.">
-	<div class="prose">
-		<h1>About</h1>
-		<!-- TODO: replace with a real bio. -->
-		<p>
-			I'm Ryan Hinkle. This site is my corner of the internet for writing about projects,
-			things I'm learning, and whatever else I find interesting.
-		</p>
-		<p>
-			You can find my code on {github && <a href={github.href}>GitHub</a>}, or follow along via the
-			<a href="/rss.xml">RSS feed</a>.
-		</p>
+	<PageHeader eyebrow="About" title="Hi, I'm Ryan." description="A bit about me and this site." />
+
+	<div class="with-sidebar">
+		<div class="prose measure">
+			<!-- TODO: replace with a real bio. -->
+			<p>
+				I'm Ryan Hinkle. This site is my corner of the internet for writing about projects, things I'm
+				learning, books I'm reading, and whatever else I find interesting.
+			</p>
+			<p>
+				You can find my code on {github && <a href={github.href}>GitHub</a>}, or follow along via the
+				<a href="/rss.xml">RSS feed</a>.
+			</p>
+		</div>
+
+		<aside class="card">
+			<p class="label">Around the site</p>
+			<ul>
+				<li><a href="/blog">Blog</a> — longer writing</li>
+				<li><a href="/notes">Notes</a> — short thoughts</li>
+				<li><a href="/books">Books</a> — my bookshelf</li>
+				<li><a href="/now">Now</a> — current focus</li>
+			</ul>
+		</aside>
 	</div>
 </BaseLayout>
+<style>
+	aside ul {
+		list-style: none;
+		margin: 0.75rem 0 0;
+		padding: 0;
+		font-size: 0.95rem;
+		color: var(--text-muted);
+	}
+	aside li + li {
+		margin-top: 0.4rem;
+	}
+</style>

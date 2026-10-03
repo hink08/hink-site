@@ -1,0 +1,173 @@
+---
+import { Image } from 'astro:assets';
+import { type Book, bookUrl, hasNotes } from '../lib/books';
+import FormattedDate from './FormattedDate.astro';
+import Rating from './Rating.astro';
+
+interface Props {
+	books: Book[];
+	/** Compact mode: a plain list with no covers or summaries (for sidebars). */
+	compact?: boolean;
+}
+
+const { books, compact = false } = Astro.props;
+---
+
+<ul class:list={['books', compact ? 'compact' : 'grid']}>
+	{
+		books.map((book) => {
+			const { title, author, cover, rating, summary, finished, started, status } = book.data;
+			const href = hasNotes(book) ? bookUrl(book) : book.data.link;
+			const external = !hasNotes(book) && href;
+			const shortTitle = compact ? title.split(':')[0] : title;
+			return (
+				<li>
+					{!compact && (
+						<div class="cover">
+							{cover ? (
+								<Image src={cover} alt="" width={128} height={192} />
+							) : (
+								<span class="cover-placeholder" aria-hidden="true">
+									{title.charAt(0)}
+								</span>
+							)}
+						</div>
+					)}
+					<div class="info">
+						<p class="title">
+							{href ? (
+								<a href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+									{shortTitle}
+								</a>
+							) : (
+								shortTitle
+							)}
+						</p>
+						<p class="author">{author}</p>
+						{!compact && summary && <p class="summary">{summary}</p>}
+						{!compact && (
+							<p class="meta">
+								{rating && <Rating value={rating} />}
+								{finished ? (
+									<span>
+										Finished <FormattedDate date={finished} />
+									</span>
+								) : (
+									status === 'reading' &&
+									started && (
+										<span>
+											Started <FormattedDate date={started} />
+										</span>
+									)
+								)}
+								{hasNotes(book) && <span class="badge">notes</span>}
+							</p>
+						)}
+					</div>
+				</li>
+			);
+		})
+	}
+</ul>
+<style>
+	.books {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	p {
+		margin: 0;
+	}
+
+	/* Grid of cards */
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+		gap: 1rem;
+	}
+	.grid li {
+		display: grid;
+		grid-template-columns: 4.5rem minmax(0, 1fr);
+		gap: 1rem;
+		padding: 1rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+	.cover img,
+	.cover-placeholder {
+		display: block;
+		width: 4.5rem;
+		aspect-ratio: 2 / 3;
+		height: auto;
+		border-radius: 4px;
+		object-fit: cover;
+		box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+	}
+	.cover-placeholder {
+		display: grid;
+		place-items: center;
+		background: var(--accent-soft);
+		color: var(--accent);
+		font-size: 1.6rem;
+		font-weight: 700;
+	}
+	.info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+
+	/* Compact list */
+	.compact li {
+		padding-block: 0.6rem;
+	}
+	.compact li + li {
+		border-top: 1px solid var(--border);
+	}
+
+	.title {
+		font-weight: 700;
+		line-height: 1.35;
+	}
+	.title a {
+		color: var(--text);
+		text-decoration: none;
+	}
+	.title a:hover {
+		color: var(--accent);
+	}
+	.author {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+	.summary {
+		margin-top: 0.35rem;
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem 0.75rem;
+		margin-top: auto;
+		padding-top: 0.5rem;
+		color: var(--text-muted);
+		font-size: 0.8rem;
+	}
+	.meta:empty {
+		display: none;
+	}
+	.badge {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		padding: 0 0.45rem;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+</style>

@@ -8,6 +8,13 @@ import { SITE } from './src/site.config.ts';
 export default defineConfig({
 	site: SITE.url,
 	integrations: [mdx(), sitemap()],
+	markdown: {
+		// Code blocks follow the active light/dark theme via CSS light-dark().
+		shikiConfig: {
+			themes: { light: 'github-light', dark: 'github-dark' },
+			defaultColor: 'light-dark()',
+		},
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),

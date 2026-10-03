@@ -1,46 +1,97 @@
 ---
 import { NAV_LINKS, SITE } from '../site.config';
 import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const initials = SITE.author
+	.split(' ')
+	.map((w) => w[0])
+	.join('');
 ---
 
-<header>
-	<nav class="container">
-		<a class="brand" href="/">{SITE.title}</a>
-		<ul>
-			{
-				NAV_LINKS.map((link) => (
-					<li>
-						<HeaderLink href={link.href}>{link.label}</HeaderLink>
-					</li>
-				))
-			}
-		</ul>
-	</nav>
+<header class="site-header">
+	<div class="container bar">
+		<a class="brand" href="/">
+			<span class="mark" aria-hidden="true">{initials}</span>
+			<span>{SITE.title}</span>
+		</a>
+		<nav aria-label="Main">
+			<ul>
+				{
+					NAV_LINKS.filter((l) => l.href !== '/').map((link) => (
+						<li>
+							<HeaderLink href={link.href}>{link.label}</HeaderLink>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<ThemeToggle />
+	</div>
 </header>
 <style>
-	header {
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
+		backdrop-filter: saturate(1.5) blur(10px);
 		border-bottom: 1px solid var(--border);
 	}
-	nav {
+	.bar {
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem 1.5rem;
-		padding-block: 1.25rem;
+		gap: 1.5rem;
+		height: 4rem;
 	}
 	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
 		font-weight: 700;
-		font-size: 1.1rem;
 		color: var(--text);
 		text-decoration: none;
 		letter-spacing: -0.01em;
+		white-space: nowrap;
+	}
+	.mark {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 8px;
+		background: var(--accent);
+		color: var(--bg);
+		font-size: 0.8rem;
+		letter-spacing: 0.02em;
+	}
+	nav {
+		margin-left: auto;
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
 	ul {
 		display: flex;
-		gap: 1.25rem;
+		gap: 0.25rem;
 		list-style: none;
 		margin: 0;
 		padding: 0;
+	}
+	@media (max-width: 640px) {
+		.bar {
+			flex-wrap: wrap;
+			height: auto;
+			gap: 0.5rem 0.75rem;
+			padding-block: 0.75rem 0.5rem;
+		}
+		.bar > :global(.theme-toggle) {
+			margin-left: auto;
+		}
+		nav {
+			order: 3;
+			width: 100%;
+			margin-left: -0.75rem;
+		}
 	}
 </style>

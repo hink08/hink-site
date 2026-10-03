@@ -1,8 +1,9 @@
 ---
+import PageHeader from '../components/PageHeader.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Not found" description="This page doesn't exist.">
-	<h1>Page not found</h1>
-	<p>Sorry, there's nothing here. <a href="/">Head back home →</a></p>
+	<PageHeader eyebrow="404" title="Page not found" description="Sorry, there's nothing here." />
+	<p><a class="button primary" href="/">Head back home</a></p>
 </BaseLayout>

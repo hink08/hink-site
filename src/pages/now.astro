@@ -1,0 +1,58 @@
+---
+// A "now" page (see https://nownownow.com/about): what I'm focused on at the moment.
+// Edit the sections below and bump `updated` whenever you change it.
+import BookList from '../components/BookList.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBooksByStatus } from '../lib/books';
+
+const updated = new Date('2025-10-03');
+const reading = await getBooksByStatus('reading');
+---
+
+<BaseLayout title="Now" description="What Ryan Hinkle is focused on right now.">
+	<PageHeader eyebrow="Now" title="What I'm up to" description="A snapshot of what I'm focused on at the moment.">
+		<p class="updated label">Updated <FormattedDate date={updated} /></p>
+	</PageHeader>
+
+	<div class="with-sidebar">
+		<div class="prose measure">
+			<!-- TODO: fill these in. -->
+			<h2>Working on</h2>
+			<ul>
+				<li>Building out this site.</li>
+			</ul>
+
+			<h2>Learning</h2>
+			<ul>
+				<li>Something new — add it here.</li>
+			</ul>
+
+			<h2>Elsewhere in life</h2>
+			<ul>
+				<li>Hobbies, travel, projects around the house…</li>
+			</ul>
+		</div>
+
+		<aside class="card">
+			<p class="label">Reading</p>
+			{reading.length > 0 ? <BookList books={reading} compact /> : <p class="empty">Between books right now.</p>}
+			<p class="more"><a href="/books">The whole bookshelf →</a></p>
+		</aside>
+	</div>
+</BaseLayout>
+<style>
+	.updated {
+		margin-top: 1rem;
+	}
+	.prose h2:first-of-type {
+		margin-top: 0;
+	}
+	.more {
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--border);
+		font-size: 0.9rem;
+	}
+</style>

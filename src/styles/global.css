@@ -1,25 +1,33 @@
 /* ---------- Design tokens ---------- */
+/*
+ * Each colour is light-dark(<light>, <dark>). Which side is used follows
+ * `color-scheme`: by default the OS preference ("light dark"), or whatever
+ * the visitor picked with the theme toggle (data-theme on <html>).
+ */
 :root {
-	--bg: #fbfaf7;
-	--surface: #f0ede6;
-	--text: #1c1f1e;
-	--text-muted: #5d6662;
-	--border: #e3dfd6;
-	--accent: #1f6f5f;
-	--code-bg: #f0ede6;
-	--measure: 44rem;
-}
+	color-scheme: light dark;
+	--bg: light-dark(#fbfaf7, #121514);
+	--surface: light-dark(#f3f0ea, #1a1e1c);
+	--surface-2: light-dark(#ebe7df, #232826);
+	--text: light-dark(#1c1f1e, #e8e6e1);
+	--text-muted: light-dark(#5d6662, #9aa39f);
+	--border: light-dark(#e3dfd6, #2a2f2d);
+	--accent: light-dark(#1f6f5f, #6cc4ad);
+	--accent-soft: light-dark(#e1efe9, #1b2d28);
+	--code-bg: light-dark(#f0ede6, #1f2321);
+	--star: light-dark(#b7791f, #e6b85c);
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #141716;
-		--surface: #1f2321;
-		--text: #e8e6e1;
-		--text-muted: #9aa39f;
-		--border: #2b302e;
-		--accent: #6cc4ad;
-		--code-bg: #1f2321;
-	}
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--wide: 68rem; /* page frame */
+	--measure: 42rem; /* readable text column */
+	--radius: 10px;
+	--gap: 2.5rem;
+}
+:root[data-theme='light'] {
+	color-scheme: light;
+}
+:root[data-theme='dark'] {
+	color-scheme: dark;
 }
 
 /* ---------- Base ---------- */
@@ -31,6 +39,7 @@
 
 html {
 	-webkit-text-size-adjust: 100%;
+	scroll-padding-top: 6.5rem; /* clear the sticky header for #anchors */
 }
 
 body {
@@ -48,14 +57,14 @@ body {
 
 main {
 	flex: 1;
-	padding-block: 2.5rem;
+	padding-block: 3rem 1rem;
 }
 
 .container {
 	width: 100%;
-	max-width: var(--measure);
+	max-width: var(--wide);
 	margin-inline: auto;
-	padding-inline: 1.25rem;
+	padding-inline: 1.5rem;
 }
 
 h1,
@@ -67,7 +76,7 @@ h4 {
 	margin: 2rem 0 0.75rem;
 }
 h1 {
-	font-size: 2.25rem;
+	font-size: clamp(2rem, 4vw, 2.75rem);
 	margin-top: 0;
 }
 h2 {
@@ -93,6 +102,65 @@ hr {
 	margin-block: 2rem;
 }
 
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* ---------- Layout primitives ---------- */
+
+/* Readable text column. */
+.measure {
+	max-width: var(--measure);
+}
+
+/* Main content + sidebar. Collapses to one column on small screens. */
+.with-sidebar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 18rem;
+	gap: var(--gap);
+	align-items: start;
+}
+.with-sidebar.sidebar-left {
+	grid-template-columns: 13rem minmax(0, 1fr);
+}
+@media (max-width: 860px) {
+	.with-sidebar,
+	.with-sidebar.sidebar-left {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Stack of page sections with consistent spacing. */
+.stack > * + * {
+	margin-top: 3.5rem;
+}
+
+/* Bordered panel for sidebars and callouts. */
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 1.25rem 1.35rem;
+}
+.card > :first-child {
+	margin-top: 0;
+}
+.card > :last-child {
+	margin-bottom: 0;
+}
+
+/* Small uppercase label used for eyebrows and section titles. */
+.label {
+	margin: 0;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--text-muted);
+}
+
 /* ---------- Prose (Markdown content) ---------- */
 .prose > :first-child {
 	margin-top: 0;
@@ -115,13 +183,14 @@ blockquote {
 	color: var(--text-muted);
 }
 code {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-family: var(--font-mono);
 	font-size: 0.9em;
 	padding: 0.1em 0.35em;
 	border-radius: 4px;
 	background: var(--code-bg);
 }
 pre {
+	border: 1px solid var(--border);
 	padding: 1rem 1.25rem;
 	border-radius: 8px;
 	overflow-x: auto;
@@ -145,6 +214,50 @@ td {
 	text-align: left;
 }
 
+/* ---------- Shared bits ---------- */
+.empty {
+	color: var(--text-muted);
+}
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.tags li {
+	font-size: 0.78rem;
+	padding: 0.05rem 0.6rem;
+	border-radius: 999px;
+	background: var(--surface-2);
+	color: var(--text-muted);
+}
+.button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.45rem 1rem;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	color: var(--text);
+	text-decoration: none;
+	font-size: 0.95rem;
+}
+.button:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+.button.primary {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--bg);
+}
+.button.primary:hover {
+	opacity: 0.9;
+	color: var(--bg);
+}
+
 /* ---------- Utilities ---------- */
 .sr-only {
 	position: absolute !important;
@@ -166,5 +279,5 @@ td {
 	clip: auto;
 	padding: 0.5rem 1rem;
 	background: var(--bg);
-	z-index: 10;
+	z-index: 100;
 }
